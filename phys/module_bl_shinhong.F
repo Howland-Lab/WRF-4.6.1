@@ -1,6 +1,10 @@
 !WRF:model_layer:physics
 !
 module module_bl_shinhong
+!BK-use pointer assignment
+  use module_param_ces_common, only :          & !BK
+           afac=>sh_afac, bfac=>sh_bfac,       & !BK
+           pfac=>sh_pfac, d1=>sh_d1, d2=>sh_d2   !BK
 !
 contains
 !
@@ -322,9 +326,10 @@ contains
    real,parameter    ::  xkzmax = 1000.,rimin = -100.
    real,parameter    ::  rlam = 30.,prmin = 0.25,prmax = 4.
    real,parameter    ::  brcr_ub = 0.0,brcr_sb = 0.25,cori = 1.e-4
-   real,parameter    ::  afac = 6.8,bfac = 6.8,pfac = 2.0,pfac_q = 2.0
+!   real,parameter    ::  afac = 6.8,bfac = 6.8,pfac = 2.0,pfac_q = 2.0 !BK
    real,parameter    ::  phifac = 8.,sfcfrac = 0.1
-   real,parameter    ::  d1 = 0.02, d2 = 0.05, d3 = 0.001
+   real,parameter    :: d3 = 0.001 !BK
+!   real,parameter    ::  d1 = 0.02, d2 = 0.05, d3 = 0.001 !BK
    real,parameter    ::  h1 = 0.33333333, h2 = 0.6666667
    real,parameter    ::  ckz = 0.001,zfmin = 1.e-8,aphi5 = 5.,aphi16 = 16.
    real,parameter    ::  tmin=1.e-2
@@ -534,6 +539,10 @@ contains
                                                                        sfcflg, &
                                                                        stable
    logical,  dimension( ndiff )              ::                        ifvmix
+!BK
+   real :: pfac_q
+!BK
+   pfac_q = pfac
 !
 !-------------------------------------------------------------------------------
 !

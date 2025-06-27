@@ -227,7 +227,7 @@
     tgdsa(i)=tsk(i)                                    
 !PSFC cb
 !   thgb(i)=tsk(i)*(100./psfc(i))**rovcp                
-    thgb(i)=tsk(i)*(p1000mb/psfcpa(i))**rovcp   
+    thgb(i)=tsk(i)*(p1000mb/psfcpa(i))**rovcp
  5 continue                                               
 !                                                            
 !-----DECOUPLE FLUX-FORM VARIABLES TO GIVE U,V,T,THETA,THETA-VIR.,
@@ -281,8 +281,13 @@
     e1=svp1*exp(svp2*(tgdsa(i)-svpt0)/(tgdsa(i)-svp3))                       
     !the saturation vapor pressure for salty water is on average 2% lower
     if(xland(i).gt.1.5 .and. lakemask(i).eq.0.) e1=e1*salinity_factor
+!BK
+! Original qsfc(i).le.0.0 permits qsfc = 0.0 to lead to a non-zero QFX for 
+! dry idealized scenarios. Modifying to strictly .lt. here solves the problem.
     !for land points qsfc can come from previous time step
-    if(xland(i).gt.1.5.or.qsfc(i).le.0.0)qsfc(i)=ep2*e1/(psfc(i)-e1)                                                 
+    if(xland(i).gt.1.5.or.qsfc(i).le.0.0)qsfc(i)=ep2*e1/(psfc(i)-e1) !BK-orig
+    ! if(xland(i).gt.1.5.or.qsfc(i).lt.0.0)qsfc(i)=ep2*e1/(psfc(i)-e1) !BK
+    !==========================================================================
 !QGH CHANGED TO USE LOWEST-LEVEL AIR TEMP CONSISTENT WITH MYJSFC CHANGE
 !Q2SAT = QGH IN LSM
     e1=svp1*exp(svp2*(t1d(i)-svpt0)/(t1d(i)-svp3))                       
@@ -326,7 +331,7 @@
     wspd(i)=sqrt(ux(i)*ux(i)+vx(i)*vx(i))                        
 
     tskv=thgb(i)*(1.+ep1*qsfc(i))                     
-    dthvdz=(thvx(i)-tskv)                                                 
+    dthvdz=(thvx(i)-tskv)
 !-----CONVECTIVE VELOCITY SCALE VC AND SUBGRID-SCALE VELOCITY VSG
 !     FOLLOWING BELJAARS (1994, QJRMS) AND MAHRT AND SUN (1995, MWR)
 !                         ... HONG AUG. 2001
@@ -362,7 +367,7 @@
 !                                                                                
 !                                                                                
 !     THE STABILITY CLASSES ARE DETERMINED BY BR (BULK RICHARDSON NO.)           
-!     AND HOL (HEIGHT OF PBL/MONIN-OBUKHOV LENGTH).                              
+!     AND HOL (HEIGHT OF PBL/MONIN-OBUKHOV LENGTH).                             
 !                                                                                
 !     CRITERIA FOR THE CLASSES ARE AS FOLLOWS:                                   
 !                                                                                
@@ -440,7 +445,7 @@
     pq10(i)=psih_stable(zl10)-psih_stable(zl)
 !
 !   1.0 over monin-obukhov length
-    rmol(i)=zol(i)/za(i) 
+    rmol(i)=zol(i)/za(i)
 !                                                                                
     goto 320                                                                 
 !                                                                                
@@ -497,7 +502,6 @@
 ! AHW: mods to compute ck, cd
      psih10(i)=amin1(psih10(i),0.9*gz10oz0(i))
      rmol(i) = zol(i)/za(i)  
-
  320 continue                                                                   
 !                                                                                
 !-----COMPUTE THE FRICTIONAL VELOCITY:                                           
@@ -875,8 +879,8 @@
 !         endif 
        elseif(xland(i)-1.5.lt.0.)then                                       
           hfx(i)=flhc(i)*(thgb(i)-thx(i))                                
-!         hfx(i)=amax1(hfx(i),-250.)                                       
-       endif                                                                  
+!         hfx(i)=amax1(hfx(i),-250.)                                      
+       endif
    400 continue                                                                 
 
    405 continue                                                                 

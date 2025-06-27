@@ -1072,6 +1072,7 @@ CHARACTER(LEN=8) :: name
    ktf=min0(kte,kde-1)
 
    ZZLND=0.1
+   IF( config_flags%spec_ideal .GT. 0 ) ZZLND = config_flags%spec_z0 !BK
    ZZWTR=0.0001
    THINLD=0.04
    ALBLND=0.2

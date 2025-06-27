@@ -50,7 +50,7 @@
     mavail,     &
     pblh,       &
     psfc,       &
-    tsk,        &
+!    tsk,        & !JDM-MMC !BK
     xland,      &
     lakemask,   &
     water_depth
@@ -105,7 +105,8 @@
     chs,        &
     flhc,       &
     flqc,       &
-    qgh
+    qgh,        &
+    tsk           !JDM-MMC !BK 
 
  real(kind=kind_phys),intent(inout),dimension(ims:ime,jms:jme),optional:: &
     ustm
@@ -152,7 +153,7 @@
        mavail_hv(i)      = mavail(i,j)
        pblh_hv(i)        = pblh(i,j)
        psfc_hv(i)        = psfc(i,j)
-       tsk_hv(i)         = tsk(i,j)
+!       tsk_hv(i)         = tsk(i,j) !JDM-MMC BK
        xland_hv(i)       = xland(i,j)
        lakemask_hv(i)    = lakemask(i,j)
        water_depth_hv(i) = water_depth(i,j)
@@ -190,6 +191,7 @@
        flhc_hv(i)   = flhc(i,j)
        flqc_hv(i)   = flqc(i,j)
        qgh_hv(i)    = qgh(i,j)
+       tsk_hv(i)    = tsk(i,j) !JDM-MMC BK
     enddo
 
     if(present(ustm)) then
@@ -254,6 +256,7 @@
        flhc(i,j)   = flhc_hv(i)
        flqc(i,j)   = flqc_hv(i)
        qgh(i,j)    = qgh_hv(i)
+       tsk(i,j)    = tsk_hv(i) !JDM-MMC BK
     enddo
 
     !optional output arguments:

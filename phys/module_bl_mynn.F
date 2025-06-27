@@ -262,7 +262,13 @@ MODULE module_bl_mynn
         zero      , half      , one        , two       , &
         onethird  , twothirds , tkmin      , t0c       , &
         tice      , kind_phys
-
+!BK-use pointer assignment
+  use module_param_ces_common,only:                              & !BK
+        g1=>mynn_g1, b1=>mynn_b1, b2=>mynn_b2, c2=>mynn_c2,      & !BK
+        c3=>mynn_c3, c4=>mynn_c4, c5=>mynn_c5, a1=>mynn_a1,      & !BK
+        c1=>mynn_c1, a2=>mynn_a2, g2=>mynn_g2, cc2=>mynn_cc2,    & !BK
+        cc3=>mynn_cc3, e1c=>mynn_e1c, e2c=>mynn_e2c,             & !BK
+        e3c=>mynn_e3c, e4c=>mynn_e4c, e5c=>mynn_e5c, pr=>mynn_pr   !BK
 
   IMPLICIT NONE
 
@@ -273,29 +279,51 @@ MODULE module_bl_mynn
                                 cphh_st=5.0, cphh_unst=16.0
 
 ! Closure constants
-  real(kind_phys), parameter ::  &
-       &pr  =  0.74,             &
-       &g1  =  0.235,            &  ! NN2009 = 0.235
-       &b1  = 24.0,              &
-       &b2  = 15.0,              &  ! CKmod     NN2009
-       &c2  =  0.729,            &  ! 0.729, & !0.75, &
-       &c3  =  0.340,            &  ! 0.340, & !0.352, &
-       &c4  =  0.0,              &
-       &c5  =  0.2,              &
-       &a1  = b1*( 1.0-3.0*g1 )/6.0, &
-!       &c1  = g1 -1.0/( 3.0*a1*b1**(1.0/3.0) ), &
-       &c1  = g1 -1.0/( 3.0*a1*2.88449914061481660), &
-       &a2  = a1*( g1-c1 )/( g1*pr ), &
-       &g2  = b2/b1*( 1.0-c3 ) +2.0*a1/b1*( 3.0-2.0*c2 )
+!  real(kind_phys), parameter ::  &
+!       &pr  =  0.74,             &
+!BK-UQ analysis
+!
+!modify model constants for UQ analysis
+!       &g1  = mynn_g1,           & !BK
+!       &g1  =  0.235,            &  ! NN2009 = 0.235     !BK-check later (affects stability functions, critical flux Ri,
+                                                         !                the contributions of tke in the pressure-velocity
+                                                         !                covariance and the pressure-potential temperature
+							  !                covariance)
+!       &b1  = mynn_b1,           & !BK
+!       &b1  = 24.0,              &                       !BK-check later (affects tke generation, stability functions,
+                                                         !                critical flux Ri, tke dissipation rate, pressure
+                                                         !                covariances)
+!       &b2  = mynn_b2,           & !BK
+!       &b2  = 15.0,              &  ! CKmod     NN2009   !BK-check later (affects the disspation rates of liquid water
+                                                         !                potential temperature, total water content,
+                                                         !                covariance between liquid water potential
+                                                         !                tempearture and total water content, stability
+                                                         !                functions, critical flux Ri)
+!       &c2  = mynn_c2,           & !BK
+!       &c2  =  0.729,            &  ! 0.729, & !0.75, &  !BK (affects the buoyancy term in the pressure-velocity covariance,
+                                                         !    stability functions, critical flux and gradient Ri)
+!       &c3  = mynn_c3,           & !BK
+!       &c3  =  0.340,            &  ! 0.340, & !0.352, & !BK (affects the buoyancy term in the pressure-potential temperature
+                                                         !    covariance, stability functions, critical flux and gradient Ri)
+!       &c4  = mynn_c4,           & !BK
+!       &c4  =  0.0,              &                       !BK (affects the shear term in the pressure-velocity covariance only)
+!       &c5  = mynn_c5,           & !BK
+!       &c5  =  0.2,              &                       !BK (affects the buoyancy and shear terms in the pressure-potential
+                                                         !    temperature covariance, stability functions, critical flux Ri)
+!       &a1  = b1*( 1.0-3.0*g1 )/6.0, &
+!!       &c1  = g1 -1.0/( 3.0*a1*b1**(1.0/3.0) ), &
+!       &c1  = g1 -1.0/( 3.0*a1*2.88449914061481660), &
+!       &a2  = a1*( g1-c1 )/( g1*pr ), &
+!       &g2  = b2/b1*( 1.0-c3 ) +2.0*a1/b1*( 3.0-2.0*c2 )
 
-  real(kind_phys), parameter ::  &
-       &cc2 =  1.0-c2,           &
-       &cc3 =  1.0-c3,           &
-       &e1c =  3.0*a2*b2*cc3,    &
-       &e2c =  9.0*a1*a2*cc2,    &
-       &e3c =  9.0*a2*a2*cc2*( 1.0-c5 ), &
-       &e4c = 12.0*a1*a2*cc2,    &
-       &e5c =  6.0*a1*a1
+!  real(kind_phys), parameter ::  &
+!       &cc2 =  1.0-c2,           &
+!       &cc3 =  1.0-c3,           &
+!       &e1c =  3.0*a2*b2*cc3,    &
+!       &e2c =  9.0*a1*a2*cc2,    &
+!       &e3c =  9.0*a2*a2*cc2*( 1.0-c5 ), &
+!       &e4c = 12.0*a1*a2*cc2,    &
+!       &e5c =  6.0*a1*a1
 
 ! Constants for min tke in elt integration (qmin), max z/L in els (zmax), 
 ! and factor for eddy viscosity for TKE (Kq = Sqfac*Km):
@@ -345,7 +373,6 @@ MODULE module_bl_mynn
 
   ! Used in WRF-ARW module_physics_init.F
   integer :: mynn_level
-
 
 CONTAINS
 
@@ -582,7 +609,6 @@ CONTAINS
     ! Substepping TKE
     integer :: nsub
     real(kind_phys) :: delt2
-
 
     if (debug_code) then !check incoming values
       do i=its,ite
@@ -1748,7 +1774,7 @@ CONTAINS
 !    tv0 = 0.61*tref
 !    tv1 = 1.61*tref
 !    gtr = 9.81/tref
-!
+
     rfc = g1/( g1+g2 )
     f1  = b1*( g1-c1 ) +3.0*a2*( 1.0    -c2 )*( 1.0-c5 ) &
     &                   +2.0*a1*( 3.0-2.0*c2 )

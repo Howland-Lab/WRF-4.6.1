@@ -2,6 +2,11 @@
 !=================================================================================================================
  module bl_ysu
  use ccpp_kind_types,only: kind_phys
+!BK-use pointer assignment
+ use module_param_ces_common,only:       & !BK
+	 afac=>ysu_afac, bfac=>ysu_bfac, & !BK
+	 pfac=>ysu_pfac, d1=>ysu_d1,     & !BK
+	 d2=>ysu_d2                        !BK
 
  implicit none
  private
@@ -142,9 +147,12 @@
    real(kind=kind_phys),parameter    ::  xkzmin = 0.01,xkzmax = 1000.,rimin = -100.
    real(kind=kind_phys),parameter    ::  rlam = 30.,prmin = 0.25,prmax = 4.
    real(kind=kind_phys),parameter    ::  brcr_ub = 0.0,brcr_sb = 0.25,cori = 1.e-4
-   real(kind=kind_phys),parameter    ::  afac = 6.8,bfac = 6.8,pfac = 2.0,pfac_q = 2.0
+!   real(kind=kind_phys),parameter    ::  afac = 6.8,bfac = 6.8,pfac = 2.0,pfac_q = 2.0 !BK-UQ analysis
+                                          !BK-removed afac,bfac,pfac. set pfac_q = pfac to be
+                                          !BK-consisted with the original code
    real(kind=kind_phys),parameter    ::  phifac = 8.,sfcfrac = 0.1
-   real(kind=kind_phys),parameter    ::  d1 = 0.02, d2 = 0.05, d3 = 0.001
+!   real(kind=kind_phys),parameter    ::  d1 = 0.02, d2 = 0.05, d3 = 0.001 !BK-UQ analysis
+   real(kind=kind_phys),parameter    ::  d3 = 0.001 !BK-removed d1, d2
    real(kind=kind_phys),parameter    ::  h1 = 0.33333335, h2 = 0.6666667
    real(kind=kind_phys),parameter    ::  zfmin = 1.e-8,aphi5 = 5.,aphi16 = 16.
    real(kind=kind_phys),parameter    ::  tmin=1.e-2
@@ -373,7 +381,14 @@
 
    real(kind=kind_phys),     dimension( kts:kte  ) :: thvx_1d,tke_1d,dzq_1d
    real(kind=kind_phys),     dimension( kts:kte+1) :: zq_1d
+!===============================================================================
+!BK-UQ analysis
+!
+!modify model constants for UQ analysis
+   real(kind=kind_phys) :: pfac_q
+   pfac_q = pfac
 
+!===============================================================================
 !
 !-------------------------------------------------------------------------------
 !
@@ -602,8 +617,10 @@
      hgamt(i)  = 0.
      hgamq(i)  = 0.
      wscale(i) = 0.
-     kpbl(i)   = 1
-     hpbl(i)   = zq(i,1)
+     kpbl(i)   = 1 !BK
+     hpbl(i)   = zq(i,1) !BK
+!     kpbl(i)   = 86 !BK
+!     hpbl(i)   = 887.0 !BK
      zl1(i)    = za(i,1)
      thermal(i)= thvx(i,1)
      thermalli(i) = thlix(i,1)
@@ -634,6 +651,7 @@
    enddo
 !
    do i = its,ite
+!     kpbl(i) = 86 !BK
      k = kpbl(i)
      if(brdn(i).ge.brcr(i))then
        brint = 0.
@@ -642,7 +660,8 @@
      else
        brint = (brcr(i)-brdn(i))/(brup(i)-brdn(i))
      endif
-     hpbl(i) = za(i,k-1)+brint*(za(i,k)-za(i,k-1))
+     hpbl(i) = za(i,k-1)+brint*(za(i,k)-za(i,k-1)) !BK
+!     hpbl(i)   = 887.0 !BK
      if(hpbl(i).lt.zq(i,2)) kpbl(i) = 1
      if(kpbl(i).le.1) pblflg(i) = .false.
    enddo
@@ -702,8 +721,10 @@
 !
    do i = its,ite
      if(pblflg(i))then
-       kpbl(i) = 1
-       hpbl(i) = zq(i,1)
+       kpbl(i) = 1 !BK
+       hpbl(i) = zq(i,1) !BK
+!       kpbl(i)   = 86 !BK
+!       hpbl(i)   = 887.0 !BK
      endif
    enddo
 !
