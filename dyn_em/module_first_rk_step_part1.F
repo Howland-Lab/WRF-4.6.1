@@ -631,6 +631,14 @@ BENCH_START(surf_driver_tim)
      &        ,MAVAIL=grid%mavail      ,NUM_SOIL_LAYERS=config_flags%num_soil_layers        &
      &        ,P8W=grid%p_hyd_w            ,PBLH=grid%pblh          ,PI_PHY=pi_phy      &
      &        ,PSFC=grid%psfc          ,PSHLTR=grid%pshltr      ,PSIH=psih          &
+     &        ,SPEC_IDEAL=config_flags%spec_ideal                                   & !MMC !BK
+     &        ,SPEC_HFX=config_flags%spec_hfx                                       & !MMC !BK
+     &        ,SPEC_SF_HEATRATE=config_flags%spec_sf_heatrate                       & !MMC !BK
+     &        ,SPEC_Z0=config_flags%spec_z0                                         & !MMC !BK
+     &        ,SPEC_DUMVAR_1=grid%spec_dumvar_1                                     & !MMC !BK
+     &        ,SPEC_DUMVAR_2=grid%spec_dumvar_2                                     & !MMC !BK
+     &        ,USTT=grid%ustt                                                       & !MMC !BK
+     &        ,MOLT=grid%molt                                                       & !MMC !BK
      &        ,BLDT=grid%bldt     ,CURR_SECS=curr_secs, ADAPT_STEP_FLAG=adapt_step_flag  &
      &        ,BLDTACTTIME=grid%bldtacttime                                              & 
      &        ,PSIM=psim          ,P_PHY=grid%p_hyd        ,Q10=grid%q10            &

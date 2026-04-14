@@ -268,7 +268,8 @@ MODULE module_bl_mynn
         c3=>mynn_c3, c4=>mynn_c4, c5=>mynn_c5, a1=>mynn_a1,      & !BK
         c1=>mynn_c1, a2=>mynn_a2, g2=>mynn_g2, cc2=>mynn_cc2,    & !BK
         cc3=>mynn_cc3, e1c=>mynn_e1c, e2c=>mynn_e2c,             & !BK
-        e3c=>mynn_e3c, e4c=>mynn_e4c, e5c=>mynn_e5c, pr=>mynn_pr   !BK
+        e3c=>mynn_e3c, e4c=>mynn_e4c, e5c=>mynn_e5c, pr=>mynn_pr,& !BK
+	beta_mynn=>mynn_beta, cns=>mynn_cns !BK
 
   IMPLICIT NONE
 
@@ -294,19 +295,14 @@ MODULE module_bl_mynn
                                                          !                critical flux Ri, tke dissipation rate, pressure
                                                          !                covariances)
 !       &b2  = mynn_b2,           & !BK
-!       &b2  = 15.0,              &  ! CKmod     NN2009   !BK-check later (affects the disspation rates of liquid water
-                                                         !                potential temperature, total water content,
-                                                         !                covariance between liquid water potential
-                                                         !                tempearture and total water content, stability
-                                                         !                functions, critical flux Ri)
+!       &b2  = 15.0,              &  ! CKmod     NN2009
 !       &c2  = mynn_c2,           & !BK
-!       &c2  =  0.729,            &  ! 0.729, & !0.75, &  !BK (affects the buoyancy term in the pressure-velocity covariance,
-                                                         !    stability functions, critical flux and gradient Ri)
+!       &c2  =  0.729,            &  ! 0.729, & !0.75, &
 !       &c3  = mynn_c3,           & !BK
 !       &c3  =  0.340,            &  ! 0.340, & !0.352, & !BK (affects the buoyancy term in the pressure-potential temperature
                                                          !    covariance, stability functions, critical flux and gradient Ri)
 !       &c4  = mynn_c4,           & !BK
-!       &c4  =  0.0,              &                       !BK (affects the shear term in the pressure-velocity covariance only)
+!       &c4  =  0.0
 !       &c5  = mynn_c5,           & !BK
 !       &c5  =  0.2,              &                       !BK (affects the buoyancy and shear terms in the pressure-potential
                                                          !    temperature covariance, stability functions, critical flux Ri)
@@ -1910,7 +1906,8 @@ CONTAINS
 
     ! THE FOLLOWING CONSTANTS ARE IMPORTANT FOR REGULATING THE
     ! MIXING LENGTHS:
-    real(kind_phys):: cns,   &   !< for surface layer (els) in stable conditions
+!    real(kind_phys):: cns,   &   !< for surface layer (els) in stable conditions !BK
+    real(kind_phys)::        &
             alp1,            &   !< for turbulent length scale (elt)
             alp2,            &   !< for buoyancy length scale (elb)
             alp3,            &   !< for buoyancy enhancement factor of elb
@@ -1946,7 +1943,7 @@ CONTAINS
 
       CASE (0) ! ORIGINAL MYNN MIXING LENGTH + BouLac
 
-        cns  = 2.7
+!        cns  = 2.7 !BK
         alp1 = 0.23
         alp2 = 1.0
         alp3 = 5.0
@@ -2009,7 +2006,7 @@ CONTAINS
            IF ( rmo .GT. 0.0 ) THEN
               els  = karman*zwk/(1.0+cns*MIN( zwk*rmo, zmax ))
            ELSE
-              els  =  karman*zwk*( 1.0 - alp4* zwk*rmo )**0.2
+              els  =  karman*zwk*( 1.0 - alp4* zwk*rmo )**beta_mynn
            END IF
 
            !   ** HARMONC AVERGING OF MIXING LENGTH SCALES:
@@ -2027,7 +2024,7 @@ CONTAINS
         ugrid = sqrt(u1(kts)**2 + v1(kts)**2)
         uonset= 15. 
         wt_u = (1.0 - min(max(ugrid - uonset, 0.0)/30.0, 0.5)) 
-        cns  = 3.5
+!        cns  = 3.5 !BK
         alp1 = 0.23
         alp2 = 0.3
         alp3 = 2.5 * wt_u !taper off bouyancy enhancement in shear-driven pbls
@@ -2102,7 +2099,7 @@ CONTAINS
            IF ( rmo .GT. 0.0 ) THEN
               els  = karman*zwk/(1.0+cns*MIN( zwk*rmo, zmax ))
            ELSE
-              els  =  karman*zwk*( 1.0 - alp4* zwk*rmo )**0.2
+              els  =  karman*zwk*( 1.0 - alp4* zwk*rmo )**beta_mynn
            END IF
 
            !   ** NOW BLEND THE MIXING LENGTH SCALES:
@@ -2127,7 +2124,7 @@ CONTAINS
 
         Uonset = 3.5 + dz(kts)*0.1
         Ugrid  = sqrt(u1(kts)**2 + v1(kts)**2)
-        cns  = 3.5 !JOE-test  * (1.0 - MIN(MAX(Ugrid - Uonset, 0.0)/10.0, 1.0))
+!        cns  = 3.5 !JOE-test  * (1.0 - MIN(MAX(Ugrid - Uonset, 0.0)/10.0, 1.0)) !BK
         alp1 = 0.22
         alp2 = 0.30
         alp3 = 2.0
@@ -2242,7 +2239,7 @@ CONTAINS
          IF ( rmo .GT. 0.0 ) THEN
             els  = karman*zwk/(1.0+cns*MIN( zwk*rmo, zmax ))
          ELSE
-            els  =  karman*zwk*( 1.0 - alp4* zwk*rmo )**0.2
+            els  =  karman*zwk*( 1.0 - alp4* zwk*rmo )**beta_mynn
          END IF
 
          !   ** NOW BLEND THE MIXING LENGTH SCALES:

@@ -1,0 +1,18 @@
+6.800   ! ysu_afac
+6.800   ! ysu_bfac
+2.000   ! ysu_pfac
+0.020   ! ysu_d1
+0.050   ! ysu_d2
+0.235   ! mynn_g1
+24.00   ! mynn_b1
+15.00   ! mynn_b2
+0.729   ! mynn_c2
+0.340   ! mynn_c3
+0.200   ! mynn_c5
+2.700   ! mynn_cns !could be 3.5, depends on the MYNN mixing length option, defaults to bl_mynn_mixlength=1.
+0.200   ! mynn_beta
+6.800   ! sh_afac
+6.800   ! sh_bfac
+2.000   ! sh_pfac
+0.020   ! sh_d1
+0.050   ! sh_d2

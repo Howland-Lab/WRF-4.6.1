@@ -437,7 +437,7 @@ subroutine GetDim(MemoryOrder,NDim,Status)
   select case (MemOrd)
     case ('xyz','xzy','yxz','yzx','zxy','zyx','xsz','xez','ysz','yez')
       NDim = 3
-    case ('xy','yx','xs','xe','ys','ye')
+    case ('xy','yx','xs','xe','ys','ye','cz') !BK
       NDim = 2
     case ('z','c')
       NDim = 1
@@ -491,7 +491,7 @@ logical function ZeroLengthHorzDim(MemoryOrder,Vector,Status)
   call LowerCase(MemoryOrder,MemOrd)
   zero_length = .false.
   select case (MemOrd)
-    case ('xsz','xez','ysz','yez','xs','xe','ys','ye','z','c')
+    case ('xsz','xez','ysz','yez','xs','xe','ys','ye','z','c','cz') !BK
       continue
     case ('0')
       continue  ! NDim=0 for scalars.  TBH:  20060502
@@ -526,7 +526,7 @@ subroutine ExtOrder(MemoryOrder,Vector,Status)
   call LowerCase(MemoryOrder,MemOrd)
   select case (MemOrd)
 
-    case ('xyz','xsz','xez','ysz','yez','xy','xs','xe','ys','ye','z','c')
+    case ('xyz','xsz','xez','ysz','yez','xy','xs','xe','ys','ye','z','c','cz') !BK
       continue
     case ('0')
       continue  ! NDim=0 for scalars.  TBH:  20060502
@@ -573,7 +573,7 @@ subroutine ExtOrderStr(MemoryOrder,Vector,ROVector,Status)
   call LowerCase(MemoryOrder,MemOrd)
   select case (MemOrd)
 
-    case ('xyz','xsz','xez','ysz','yez','xy','xs','xe','ys','ye','z','c')
+    case ('xyz','xsz','xez','ysz','yez','xy','xs','xe','ys','ye','z','c','cz') !BK
       continue
     case ('0')
       continue  ! NDim=0 for scalars.  TBH:  20060502
@@ -748,7 +748,7 @@ subroutine Transpose(IO,MemoryOrder,di, Field,l1,l2,m1,m2,n1,n2 &
 #undef  DFIELD
 #define DFIELD XField(1:di,XDEX(i,k,j))
 #include "transpose.code"
-    case ('xyz','xsz','xez','ysz','yez','xy','xs','xe','ys','ye','z','c','0')
+    case ('xyz','xsz','xez','ysz','yez','xy','xs','xe','ys','ye','z','c','0','cz') !BK
 #undef  DFIELD
 #define DFIELD XField(1:di,XDEX(i,j,k))
 #include "transpose.code"

@@ -5,6 +5,7 @@ SUBROUTINE init_modules( phase )
  USE module_configure           , ONLY : init_module_configure
  USE module_driver_constants    , ONLY : init_module_driver_constants
  USE module_model_constants     , ONLY : init_module_model_constants
+ USE module_param_ces_common    , ONLY : init_module_param_ces_common !BK
  USE module_domain              , ONLY : init_module_domain
  USE module_machine             , ONLY : init_module_machine
  USE module_nesting             , ONLY : init_module_nesting
@@ -63,6 +64,7 @@ IF ( phase == 1 ) THEN
  CALL init_module_configure
  CALL init_module_driver_constants
  CALL init_module_model_constants
+ CALL init_module_param_ces_common !BK
  CALL init_module_domain
  CALL init_module_machine
 

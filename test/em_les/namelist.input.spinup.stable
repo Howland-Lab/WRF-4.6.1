@@ -81,6 +81,9 @@
  ifsnow                              = 0,
  topo_wind                           = 2,     0,     0,
  ysu_topdown_pblmix                  = 1,
+ shinhong_tke_diag                   = 1,
+ bl_mynn_closure                     = 2.5,
+ bl_mynn_mixlength                   = 2, 
  /
 
  &fdda

@@ -623,11 +623,9 @@ module_madwrf.o: \
 	../share/module_soil_pre.o \
 	module_mp_thompson.o 
 
-
 module_bl_ysu.o: \
 	ccpp_kind_types.o \
 	physics_mmm/bl_ysu.o
-  
 
 module_bl_myjpbl.o: \
 	../share/module_model_constants.o 
@@ -662,14 +660,15 @@ module_bl_gfsedmf.o: \
 	module_gfs_machine.o \
 	module_gfs_physcons.o 
 
-
+#BK
 module_bl_mynn.o: \
-	module_bl_mynn_common.o 
+	module_bl_mynn_common.o \
+	../share/module_param_ces_common.o
 
 
 module_bl_mynn_wrapper.o: \
 	module_bl_mynn.o \
-	module_bl_mynn_common.o 
+	module_bl_mynn_common.o
 
 
 module_bl_gwdo.o: \
@@ -1358,7 +1357,7 @@ module_physics_init.o: \
 	../frame/module_wrf_error.o \
 	../frame/module_dm.o \
 	../share/module_llxy.o \
-	../share/module_model_constants.o 
+	../share/module_model_constants.o
 
 
 module_microphysics_driver.o: \
@@ -1558,6 +1557,7 @@ module_surface_driver.o: \
 	module_sf_tmnupdate.o \
 	module_sf_temfsfclay.o \
 	module_sf_idealscmsfclay.o \
+	module_sf_spec_ideal_tsk.o      \
 	module_sf_scmflux.o \
 	module_sf_scmskintemp.o \
 	module_sf_ocean_driver.o \
@@ -1857,9 +1857,10 @@ physics_mmm/mp_wsm6_effectRad.o: \
 	ccpp_kind_types.o \
 	physics_mmm/mp_wsm6.o
 
-
+#BK
 physics_mmm/bl_ysu.o: \
-	ccpp_kind_types.o
+	ccpp_kind_types.o \
+	../share/module_param_ces_common.o
 
 
 physics_mmm/bl_gwdo.o : \
@@ -2075,7 +2076,8 @@ init_modules.o: \
 	module_io_wrf.o \
 	module_bc.o \
 	module_model_constants.o \
-	../frame/module_wrf_error.o 
+	../frame/module_wrf_error.o \
+	module_param_ces_common.o #BK
 
 
 interp_fcn.o: \
@@ -2785,6 +2787,9 @@ module_bl_mynn_common.o: \
 	../share/module_model_constants.o \
 	ccpp_kind_types.o
 
+#BK
+module_param_ces_common.o: \
+	../phys/ccpp_kind_types.o
 
 module_cu_mskf.o: \
 	../frame/module_wrf_error.o 
