@@ -1,0 +1,41 @@
+# registry.column_out
+#
+# Write 1D column output to a separate file. Jeff Mirocha (LLNL) May 2021
+#
+state    real   ucol      {ncol}k    misc    1    -    h4    "ucol"      "u (x) velocity at mass points"           "m s-1"
+state    real   vcol      {ncol}k    misc    1    -    h4    "vcol"      "v (y) velocity at mass points"           "m s-1"
+state    real   wcol      {ncol}k    misc    1    -    h4    "wcol"      "w (z) velocity at mass points"           "m s-1"
+state    real   tcol      {ncol}k    misc    1    -    h4    "tcol"      "theta at mass points"                    "K"
+state    real   pcol      {ncol}k    misc    1    -    h4    "pcol"      "p at mass points"                        "Pa"
+state    real   tkecol    {ncol}k    misc    1    -    h4    "tkecol"    "TKE at mass points"                      "m2 s-2"
+state    real   qkecol    {ncol}k    misc    1    -    h4    "qkecol"    "Twice TKE from MYNN at mass points"      "m2 s-2"
+state    real   tkepblcol {ncol}k    misc    1    -    h4    "tkepblcol" "TKE from PBL models at mass points"      "m2 s-2"
+state    real   qcol      {ncol}k    misc    1    -    h4    "qcol"      "water vapor mixing ratio at mass points" "kg kg-1"
+
+state    real   t11col    {ncol}k    misc    1    -    h4    "t11col"    "sfs uu momentum flux at mass points"     "m2 s-2"
+state    real   t22col    {ncol}k    misc    1    -    h4    "t22col"    "sfs vv momentum flux at mass points"     "m2 s-2"
+state    real   t33col    {ncol}k    misc    1    -    h4    "t33col"    "sfs ww momentum flux at mass points"     "m2 s-2"
+state    real   t12col    {ncol}k    misc    1    -    h4    "t12col"    "sfs uv momentum flux at mass points"     "m2 s-2"
+state    real   t13col    {ncol}k    misc    1    -    h4    "t13col"    "sfs uw momentum flux at eta points"      "m2 s-2"
+state    real   t23col    {ncol}k    misc    1    -    h4    "t23col"    "sfs vw momentum flux at eta points"      "m2 s-2"
+state    real   h1col     {ncol}k    misc    1    -    h4    "h1col"     "sfs ut heat flux at eta points"          "K m s-1"
+state    real   h2col     {ncol}k    misc    1    -    h4    "h2col"     "sfs vt heat flux at eta points"          "K m s-1"
+state    real   h3col     {ncol}k    misc    1    -    h4    "h3col"     "sfs wt heat flux at eta points"          "K m s-1"
+state    real   q1col     {ncol}k    misc    1    -    h4    "q1col"     "sfs uq moisture flux at eta points"      "kg kg-1 m s-1"
+state    real   q2col     {ncol}k    misc    1    -    h4    "q2col"     "sfs vq moisture flux at eta points"      "kg kg-1 m s-1"
+state    real   q3col     {ncol}k    misc    1    -    h4    "q3col"     "sfs wq moisture flux at eta points"      "kg kg-1 m s-1"
+
+state    real   exchmcol  {ncol}k    misc    1    -    h4    "exchmcol"  "eddy diff. coeff. for momentum"          "m2 s-1"
+
+state    real   zcol      {ncol}k    misc    1    -    h4    "zcol"      "z at eta points"                         "m"
+
+state    real   uscol     {ncol}     misc    1    -    h4    "uscol"     "surface u* at eta point"                 "m2 s-2"
+state    real   z0col     {ncol}     misc    1    -    h4    "z0col"     "z0 at eta point"                         "m"
+
+rconfig    integer   column_out_opt              namelist,dynamics     1    0    -    "column_out_opt"             "1 to enable column output"    " "
+rconfig    integer   column_out_ij               namelist,dynamics     1   10    -    "column_out_ij"              "column output total number of ij indices"    " "
+rconfig    integer   column_out_i                namelist,dynamics    10    1    -    "column_out_i"               "column output i index"    " "
+rconfig    integer   column_out_j                namelist,dynamics    10    1    -    "column_out_j"               "column output j index"    " "
+
+package  no_column_out  column_out_opt==0   -                 -
+package  column_out     column_out_opt==1   -                 state:ucol,vcol,wcol,tcol,pcol,tkecol,qkecol,tkepblcol,qcol,t11col,t22col,t33col,t12col,t13col,t23col,h1col,h2col,h3col,q1col,q2col,q3col,zcol,uscol,z0col,exchmcol

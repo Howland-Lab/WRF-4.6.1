@@ -2,6 +2,10 @@
  module sf_sfclayrev
  use ccpp_kind_types,only: kind_phys
 
+!BK-use pointer assignment
+ use module_param_ces_common,only:       & !BK
+         wsdf_m, wsdf_b                    !BK
+
  implicit none
  private
  public:: sf_sfclayrev_run,     &
@@ -285,8 +289,8 @@
 ! Original qsfc(i).le.0.0 permits qsfc = 0.0 to lead to a non-zero QFX for 
 ! dry idealized scenarios. Modifying to strictly .lt. here solves the problem.
     !for land points qsfc can come from previous time step
-    if(xland(i).gt.1.5.or.qsfc(i).le.0.0)qsfc(i)=ep2*e1/(psfc(i)-e1) !BK-orig
-    ! if(xland(i).gt.1.5.or.qsfc(i).lt.0.0)qsfc(i)=ep2*e1/(psfc(i)-e1) !BK
+!    if(xland(i).gt.1.5.or.qsfc(i).le.0.0)qsfc(i)=ep2*e1/(psfc(i)-e1) !BK-orig
+    if(xland(i).gt.1.5.or.qsfc(i).lt.0.0)qsfc(i)=ep2*e1/(psfc(i)-e1) !BK
     !==========================================================================
 !QGH CHANGED TO USE LOWEST-LEVEL AIR TEMP CONSISTENT WITH MYJSFC CHANGE
 !Q2SAT = QGH IN LSM
@@ -807,7 +811,11 @@
           znt(i) = depth_dependent_z0(water_depth(i),znt(i),ust(i))
        else
           !Since V3.7 (ref: EC Physics document for Cy36r1)
-          znt(i)=czo*ust(i)*ust(i)/g+0.11*1.5e-5/ust(i)
+!          znt(i)=czo*ust(i)*ust(i)/g+0.11*1.5e-5/ust(i) !BK orig formulation
+!BK
+! ===========================================================================
+          znt(i)=(wsdf_m*(SQRT(u10(i)**2+v10(i)**2))+wsdf_b)*ust(i)*ust(i)/g+0.11*1.5e-5/ust(i) !BK modified for UQ
+! ===========================================================================
           ! v3.9: add limit as in isftcflx = 1,2
           znt(i)=min(znt(i),2.85e-3)
        endif

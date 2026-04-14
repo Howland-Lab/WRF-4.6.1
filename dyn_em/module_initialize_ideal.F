@@ -1477,7 +1477,6 @@ ENDIF
     DO I = its, min(ide-1,ite)
 !     xrad = config_flags%dx*float(i-nxc)/10000.
       xrad = 0.
-      ! call random_seed !BK for random seed otherwise seed is fixed (Comment out for fixed random seed)
       call random_number (randx)
       randx = randx - 0.5
 !     DO K = 1, kte-1
@@ -1672,28 +1671,6 @@ ENDIF
   ENDDO
   ENDDO
   ENDDO
-
-
-  ! !BK velocity perturbation
-  ! DO J = jts, min(jde-1,jte)
-  !   DO I = its, min(ide-1,ite)
-  !     ! call random_seed !BK for random seed otherwise seed is fixed (Comment out for fixed random seed)
-  !     call random_number (randx)
-  !     randx = randx - 0.5
-  !     DO K = 1, kte-1
-  !          !BK =================================================================
-  !          grid%u_1(i,k,j)=grid%u_1(i,k,j)+ 0.1 *randx !BK velocity perturbation
-  !          grid%u_2(i,k,j)=grid%u_1(i,k,j) !BK velocity perturbation (Change u_1 and u_2 to w_1 and w_2 for vertical velocity perturbations)
-  !          !BK uncomment the following two lines if v-velocity profile in
-  !          !input.sounding is non-zero.
-! !           grid%v_1(i,k,j)=grid%v_1(i,k,j)+ 0.1 *randx !BK velocity perturbation
-! !           grid%v_2(i,k,j)=grid%v_1(i,k,j) !BK velocity perturbation
-  !          !BK =================================================================
-  !     ENDDO
-  !   ENDDO
-  ! ENDDO
-
-
 
   IF ( wrf_dm_on_monitor() ) THEN
   DO k=1,kte-1

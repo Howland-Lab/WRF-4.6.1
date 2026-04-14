@@ -8,19 +8,23 @@ MODULE module_param_ces_common
 
   ! MYNN only
   REAL(kind=kind_phys), PARAMETER :: mynn_pr = 0.74
+  REAL(kind=kind_phys), PARAMETER :: mynn_b2 = 15.0
+  REAL(kind=kind_phys), PARAMETER :: mynn_c2 = 0.729
   REAL(kind=kind_phys), PARAMETER :: mynn_c4 = 0.0
 
   ! Declare variables without PARAMETER attribute
   ! YSU 
   REAL(kind=kind_phys) :: ysu_afac, ysu_bfac, ysu_pfac, ysu_d1, ysu_d2
   ! MYNN
-  REAL(kind=kind_phys) :: mynn_g1, mynn_b1, mynn_b2, mynn_cns
-  REAL(kind=kind_phys) :: mynn_c2, mynn_c3, mynn_c5, mynn_beta
+  REAL(kind=kind_phys) :: mynn_g1, mynn_b1, mynn_cns
+  REAL(kind=kind_phys) :: mynn_c3, mynn_c5, mynn_beta
   REAL(kind=kind_phys) :: mynn_a1, mynn_c1, mynn_a2, mynn_g2
   REAL(kind=kind_phys) :: mynn_cc2, mynn_cc3, mynn_e1c, mynn_e2c
   REAL(kind=kind_phys) :: mynn_e3c, mynn_e4c, mynn_e5c
   ! SH
   REAL(kind=kind_phys) :: sh_afac, sh_bfac, sh_pfac, sh_d1, sh_d2
+  ! REV MM5 - WSDF Charnock relation
+  REAL(kind=kind_phys) :: wsdf_m, wsdf_b
 
 CONTAINS
 
@@ -47,8 +51,6 @@ CONTAINS
 ! MYNN
     READ(15, *) mynn_g1
     READ(15, *) mynn_b1
-    READ(15, *) mynn_b2
-    READ(15, *) mynn_c2
     READ(15, *) mynn_c3
     READ(15, *) mynn_c5
     READ(15, *) mynn_cns
@@ -59,6 +61,9 @@ CONTAINS
     READ(15, *) sh_pfac
     READ(15, *) sh_d1
     READ(15, *) sh_d2
+! REV MM5 WSDF Charnock params
+    READ(15, *) wsdf_m
+    READ(15, *) wsdf_b
     ! Close the file
 16  CLOSE(15)
 
