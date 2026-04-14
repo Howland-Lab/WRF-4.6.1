@@ -84,6 +84,7 @@
  shinhong_tke_diag                   = 1,
  bl_mynn_closure                     = 2.5,
  bl_mynn_mixlength                   = 2, 
+ ideal_xland                         = 2,
  /
 
  &fdda
@@ -121,8 +122,8 @@
  use_theta_m                         = 0,
  spec_ideal                          = 1,
  spec_hfx                            = 0.0,
- spec_z0                             = 0.1,
- spec_sf_heatrate                    = -0.25,
+ spec_z0                             = 0.0001,
+! spec_sf_heatrate                    = -0.25,
  spec_lat                            = 73.0,
 ! spec_init_perts                     = .false.,
 ! spec_pblh                           = 700.0,
