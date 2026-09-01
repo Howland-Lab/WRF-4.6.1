@@ -453,9 +453,18 @@ SUBROUTINE mynnedmf_wrapper_run(                 &
       do k=kts,ktf
          do i=its,itf
              sqv(i,k)=qv(i,k,j)/(1.0 + qv(i,k,j))
-             sqc(i,k)=qc2d(i,k)/(1.0 + qv(i,k,j))
+!            sqc(i,k)=qc2d(i,k)/(1.0 + qv(i,k,j)) !BK - commented out
          enddo
       enddo
+      if (flag_qc) then !BK added if condition for qc flag
+         do k=kts,ktf
+           do i=its,itf
+             sqc(i,k)=qc2d(i,k)/(1.0 + qv(i,k,j))
+           enddo
+         enddo
+      else
+         sqc(:,:)=0.0 !BK
+      endif !BK
       if (flag_qi) then
          do k=kts,ktf
            do i=its,itf

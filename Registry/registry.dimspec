@@ -13,6 +13,8 @@ dimspec    stoclev 2     namelist=num_stoch_levels         z     num_stoch_level
 dimspec    pertn3d 4     namelist=num_pert_3d              z     num_pert_3d
 dimspec    j       3     standard_domain                   y     south_north
 dimspec    k       2     standard_domain                   z     bottom_top
+#BK
+dimspec    ncol    -     namelist=column_out_ij            c     dim_ncol_ij
 endif
 
 ifdef DA_CORE=1

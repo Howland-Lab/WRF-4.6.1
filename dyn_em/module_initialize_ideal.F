@@ -136,6 +136,14 @@ CONTAINS
 
    LOGICAL, EXTERNAL :: wrf_dm_on_monitor
 
+!BK
+   REAL :: delta                    !JDM-SWiFT Depth to apply perturbations
+   INTEGER :: nkp                   !JDM-SWiFT Number of height levels to apply perturbations
+   REAL, DIMENSION(nl_max) ::sf     !JDM-SWiFT Scale factor for perturbation magnitudes
+   REAL, DIMENSION(nl_max) ::zradk  !BK
+   REAL :: zradpsum, zraddsum       !BK
+   REAL :: counterpsum, counterdsum !BK
+
    SELECT CASE ( model_data_order )
          CASE ( DATA_ORDER_ZXY )
    kds = grid%sd31 ; kde = grid%ed31 ;
@@ -596,9 +604,27 @@ CONTAINS
          grid%e(i,j)        = 0.
 !  for LES, include Coriolis force
          grid%f(i,j)        = 1.e-4
+!	 grid%f(i,j)        = 0. !BK turn off Coriolis
 
       END DO
    END DO
+
+!BK
+!JDM-MMC Compute Coriolis terms from specified latitude.
+!IF ( config_flags%spec_lat .NE. -999.9 ) THEN
+! DME-MMC use the flag for ideal settings
+IF ( config_flags%spec_ideal .GT. 0 ) THEN
+
+    DO j = jts, jte
+      DO i = its, ite
+
+        grid%e(i,j)     = 2*EOMEG*COS(config_flags%spec_lat*degrad)
+        grid%f(i,j)     = 2*EOMEG*SIN(config_flags%spec_lat*degrad)
+
+      END DO
+   END DO
+
+ENDIF
 
    END SELECT ideal_landmap
 
@@ -1366,6 +1392,76 @@ CONTAINS
   ENDDO
 
   CASE (les)
+!!BK
+!!JDM MMC Use code below to add perturbations
+!  delta = config_flags%spec_pblh
+!  nkp = 0
+!
+!  print*,'Adding initial perturbations'
+!  print*,'k,     z_mid(k),     sf(k),      nkp'
+!
+!  IF(config_flags%spec_init_perts) THEN
+!    DO k = 1, kte-1
+!      zradpsum    = 0.0
+!      counterpsum = 0.0
+!      DO J = jts, min(jde-1,jte)
+!        DO I = its, min(ide-1,ite)
+!          zradpsum = zradpsum + 0.5*(grid%ph_1(i,k,j)+grid%ph_1(i,k+1,j)  &
+!                   +                 grid%phb (i,k,j)+grid%phb (i,k+1,j))/g
+!          counterpsum = counterpsum + 1.0
+!        ENDDO
+!      ENDDO
+!#ifdef DM_PARALLEL
+!      zraddsum    = wrf_dm_sum_real(zradpsum)
+!      counterdsum = wrf_dm_sum_real(counterpsum)
+!#else
+!      zraddsum    = zradpsum
+!      counterdsum = counterpsum
+!#endif
+!      zradk(k) = zraddsum/counterdsum
+!      sf(k) = ( (delta-zradk(k))/delta )**3
+!      IF( sf(k) .LE. 0.0 ) THEN
+!        IF( sf(k-1) .GT. 0.0 ) nkp = k - 1
+!        sf(k) = 0.0
+!      ENDIF
+!      PRINT*,k,zradk(k),sf(k),nkp
+!    ENDDO
+!  ELSE
+!    zradk(:) = 0.0
+!    sf(:) = 0.0
+!    DO k = 1, kte-1
+!      PRINT*,k,zradk(k),sf(k),nkp
+!    ENDDO
+!  ENDIF
+!  DO J = jts, min(jde-1,jte)
+!    DO I = its, min(ide-1,ite)
+!     DO K = 1, nkp  !JDM-SWiFT
+!     call random_number (randx) !JDM-SWiFT
+!     randx = randx - 0.5        !JDM-SWiFT
+!           grid%t_1(i,k,j)=grid%t_1(i,k,j) + randx*sf(k)
+!           grid%t_1(i,k,j)=grid%t_1(i,k,j)
+!           grid%t_2(i,k,j)=grid%t_1(i,k,j)
+!           qvf = 1. + rvovrd*moist(i,k,j,P_QV)
+!           grid%alt(i,k,j) = (r_d/p1000mb)*(grid%t_1(i,k,j)+t0)*qvf* &
+!                        (((grid%p(i,k,j)+grid%pb(i,k,j))/p1000mb)**cvpm)
+!           grid%al(i,k,j) = grid%alt(i,k,j) - grid%alb(i,k,j)
+!     ENDDO
+!
+!!  rebalance hydrostatically
+!
+!      DO  kk  = 2,kte
+!        k = kk - 1
+!        grid%ph_1(i,kk,j) = grid%ph_1(i,kk-1,j) - (grid%dnw(kk-1))*(       &
+!                     ((grid%c1h(k)*grid%mub(i,j)+grid%c2h(k))+(grid%c1h(k)*grid%mu_1(i,j)))*grid%al(i,kk-1,j)+ &
+!                      (grid%c1h(k)*grid%mu_1(i,j))*grid%alb(i,kk-1,j)  )
+!
+!        grid%ph_2(i,kk,j) = grid%ph_1(i,kk,j)
+!        grid%ph0(i,kk,j) = grid%ph_1(i,kk,j) + grid%phb(i,kk,j)
+!      ENDDO
+!
+!    ENDDO
+!  ENDDO
+
 !  thermal perturbation to kick off convection
 
   write(6,*) ' nxc, nyc for perturbation ',nxc,nyc
@@ -1381,6 +1477,7 @@ CONTAINS
     DO I = its, min(ide-1,ite)
 !     xrad = config_flags%dx*float(i-nxc)/10000.
       xrad = 0.
+      ! call random_seed !BK for random seed otherwise seed is fixed (Comment out for fixed random seed)
       call random_number (randx)
       randx = randx - 0.5
 !     DO K = 1, kte-1
@@ -1398,7 +1495,8 @@ CONTAINS
         RAD=SQRT(xrad*xrad+yrad*yrad+zrad*zrad)
         IF(RAD <= 1.) THEN
 !          grid%t_1(i,k,j)=grid%t_1(i,k,j)+delt*COS(.5*PI*RAD)**2
-           grid%t_1(i,k,j)=grid%t_1(i,k,j)+ 0.1 *randx
+           grid%t_1(i,k,j)=grid%t_1(i,k,j)+ 0.1 *randx !BK orig
+!           grid%t_1(i,k,j)=grid%t_1(i,k,j) !BK turn off buoyancy
            grid%t_2(i,k,j)=grid%t_1(i,k,j)
            qvf = 1. + rvovrd*moist(i,k,j,P_QV)
            grid%alt(i,k,j) = (r_d/p1000mb)*(grid%t_1(i,k,j)+t0)*qvf* &
@@ -1574,6 +1672,28 @@ CONTAINS
   ENDDO
   ENDDO
   ENDDO
+
+
+  ! !BK velocity perturbation
+  ! DO J = jts, min(jde-1,jte)
+  !   DO I = its, min(ide-1,ite)
+  !     ! call random_seed !BK for random seed otherwise seed is fixed (Comment out for fixed random seed)
+  !     call random_number (randx)
+  !     randx = randx - 0.5
+  !     DO K = 1, kte-1
+  !          !BK =================================================================
+  !          grid%u_1(i,k,j)=grid%u_1(i,k,j)+ 0.1 *randx !BK velocity perturbation
+  !          grid%u_2(i,k,j)=grid%u_1(i,k,j) !BK velocity perturbation (Change u_1 and u_2 to w_1 and w_2 for vertical velocity perturbations)
+  !          !BK uncomment the following two lines if v-velocity profile in
+  !          !input.sounding is non-zero.
+! !           grid%v_1(i,k,j)=grid%v_1(i,k,j)+ 0.1 *randx !BK velocity perturbation
+! !           grid%v_2(i,k,j)=grid%v_1(i,k,j) !BK velocity perturbation
+  !          !BK =================================================================
+  !     ENDDO
+  !   ENDDO
+  ! ENDDO
+
+
 
   IF ( wrf_dm_on_monitor() ) THEN
   DO k=1,kte-1

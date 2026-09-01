@@ -79,6 +79,9 @@ SUBROUTINE solve_em ( grid , config_flags  &
    USE module_avgflx_em, ONLY : zero_avgflx, upd_avgflx
    USE module_cpl, ONLY : coupler_on, cpl_settime, cpl_store_input
 
+!BK
+   USE module_column_out !JDM-MMC
+
 #if (WRF_CMAQ == 1)
    use twoway_data_module
 #endif
@@ -4741,6 +4744,55 @@ BENCH_END(bc_2d_tim)
 
    END DO
    !$OMP END PARALLEL DO
+
+!BK
+! JDM-MMC
+   IF ( config_flags%column_out_opt .EQ. 1 .AND. config_flags%max_dom .EQ. grid%id) THEN
+
+    CALL wrf_debug ( 10 , ' call column_calc' )
+
+    !$OMP PARALLEL DO   &
+    !$OMP PRIVATE ( ij )
+    DO ij = 1 , grid%num_tiles
+
+       CALL compute_column_output( grid%ucol, grid%vcol, grid%wcol, grid%tcol, grid%pcol,     &
+                                   grid%tkecol, grid%qkecol, grid%tkepblcol,                  &
+                                   grid%exchmcol, grid%qcol,                                  &
+                                   grid%t11col, grid%t22col, grid%t33col,                     &
+                                   grid%t12col, grid%t13col, grid%t23col,                     &
+				   grid%h1col, grid%h2col, grid%h3col,                        &
+				   grid%q1col, grid%q2col, grid%q3col,                        &
+				   grid%zcol, grid%uscol, grid%z0col,                         &
+				   config_flags%column_out_ij, model_config_rec%column_out_i, &
+                                   model_config_rec%column_out_j,                             &
+                                   grid%u_2, grid%v_2, grid%w_2, grid%t_2, grid%p,            &
+                                   grid%pb, grid%ph_2, grid%phb, grid%tke_2,                  & ! grid%qke is for the MYNN model only
+                                   grid%qke, grid%tke_pbl, grid%exch_m,                       & ! grid%tke_pbl is for all PBL models that solve a prognostic equation for TKE
+				   moist(ims,kms,jms,P_QV),                                   & ! These two variables will be zero for LES
+                                   nba_mij(ims,kms,jms,P_m11),                                &
+                                   nba_mij(ims,kms,jms,P_m22),                                &
+                                   nba_mij(ims,kms,jms,P_m33),                                &
+                                   nba_mij(ims,kms,jms,P_m12),                                &
+                                   nba_mij(ims,kms,jms,P_m13),                                &
+                                   nba_mij(ims,kms,jms,P_m23),                                &
+				   nba_mij(ims,kms,jms,P_mh1),                                &
+				   nba_mij(ims,kms,jms,P_mh2),                                &
+                                   nba_mij(ims,kms,jms,P_mh3),                                &
+				   nba_mij(ims,kms,jms,P_mq1),                                &
+				   nba_mij(ims,kms,jms,P_mq2),                                &
+				   nba_mij(ims,kms,jms,P_mq3),                                &
+                                   grid%ustm, grid%znt, grid%ht,                              &
+                                   ids, ide, jds, jde, kds, kde,                              &
+                                   ims, ime, jms, jme, kms, kme,                              &
+                                   grid%i_start(ij), grid%i_end(ij),                          &
+                                   grid%j_start(ij), grid%j_end(ij),                          &
+                                   k_start, k_end                                             )
+      
+    END DO
+    !$OMP END PARALLEL DO
+
+    ENDIF
+!-----------------------------JDM-MMC END
 
 !-----------------------------------------------------------
 !  After all of the RK steps, after the microphysics, after p-rho-phi,
